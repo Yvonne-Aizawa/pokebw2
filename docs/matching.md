@@ -38,6 +38,12 @@ tools that show the differences.
 - Independent stores are scheduled freely, so the asm's store order doesn't show the source's. A function that only
   fills a struct, with only a constant's register different, can need any order of its assignments: `btl_main.c`'s
   `BtlMainSeq_Set` inline matches only as `func`, `nextFunc`, `mainModule`, `state`.
+- Two independent values reloaded from their spill slots to set up a call are ordered by the scheduler, not the
+  source, so a 4-byte swap of such reloads can have no C spelling. `gtsnego_disp.c`'s `GtsNegoDisp_DimPalettes`
+  reloads `vram` from its slot before materialising the zero offset where our build does the reverse, forced because
+  its loop body spills both the pointer and the index that the matching sibling `GtsNegoDisp_DimPalettesVBlank` keeps
+  in registers; `wbt_list.c`'s `WbtList_PrintMessage` ties the same way on the one call whose index is reloaded from
+  the stack. When the rest of the function is byte-identical and only two such reloads swap, stop.
 - A parameter the original copies to a saved register at entry and changes there in place is walked by the source
   itself, not copied to a local: `arrow.c`'s `Arrow_SetPathCore` steps `startX -= PIECE_SIZE` rather than an
   `x = startX - PIECE_SIZE`.
