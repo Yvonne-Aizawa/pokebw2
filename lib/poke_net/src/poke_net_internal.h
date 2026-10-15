@@ -94,6 +94,8 @@ void POKE_NET_SSL_EndConnection(POKE_NET_SSL_CONNECTION *connection);
 
 // The C library's memcpy as the compiler builds it in: a copy of a constant size is done in place
 #define POKE_NET_Memcpy __memcpy
+// The compiler's own zero-fill, what it emits in place of a zero-initialized aggregate's copy
+#define POKE_NET_MemClear __builtin__clear
 
 // The Wi-Fi library's allocator, and its last error (its code and type)
 void *func_020586e4(int heap, u32 size);

@@ -1983,6 +1983,13 @@ Narrowing shifts, reloads, recomputed addresses and folded constants.
   label on `__aeabi_uldivmod` with `config_fixes.py add-label` before it can go complete.
 - A float one ULP off a round decimal is written with the shortest digits that round to it, and a comment:
   Kadabra's sprite offset in `pokemontrade_3d.c` is 0x40533334, next to `3.3f`'s 0x40533333, so it is `3.3000002f`.
+- `memset(p, 0, size)` never inlines under this compiler, even with a global pointer and a `sizeof` size: it keeps
+  calling the library `memset`. The zero-initializer the compiler uses for a local aggregate (`T x = {0};`, an
+  unrolled `stm` of zeroed registers) is itself callable, as `__builtin__clear(p, size)`, named in the compiler
+  binary's string table beside `__memcpy`. Called on a global or other non-stack destination it gives the original's
+  in-place `stmia` zero-fill directly; a compound literal, a zeroed local, or a `static const` zero all still copy
+  from a temporary instead, which doesn't match. `poke_net.c`'s `POKE_NET_Release` matches calling it as
+  `POKE_NET_MemClear`, defined `__builtin__clear` beside `POKE_NET_Memcpy`'s `__memcpy`.
 
 ## Data and sections
 

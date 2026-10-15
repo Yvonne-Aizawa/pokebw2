@@ -462,6 +462,9 @@ text to `grep -n` there. Entries without a key come from later work and still be
 - Float arithmetic on a local holding a constant isn't folded. (matching.md: "doesn't fold float arithmetic")
 - Division and modulo call `_s32_div_f` or `_u32_div_f` by signedness. A `u8`/`u16` promotes to signed `int`.
   (matching.md: "_s32_div_f")
+- `memset(p, 0, size)` never inlines, even for a global. The compiler's own zero-initializer is callable directly as
+  `__builtin__clear(p, size)`, next to `__memcpy` in the compiler binary; it inlines on a global, not a stack temp.
+  (matching.md: "memset(p, 0, size) never inlines")
 - `__aeabi_uldivmod` on sign-extended operands is an `int` cast to `u64`; MWCC calls it `_ll_udiv`.
   (matching.md: "A 64-bit division")
 - A 64-bit division calls `_ll_sdiv` for signed operands and `_ll_udiv` for unsigned; the probe masks the

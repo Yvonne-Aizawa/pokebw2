@@ -55,7 +55,7 @@ static u8 sPOKE_NET_ThreadStack[POKE_NET_THREAD_STACK_SIZE];
 
 void POKE_NET_Release(void) {
     POKE_NET_Clear();
-    memset(&gPOKE_NET_Control.Auth, 0, sizeof(POKE_NET_REQUESTCOMMON_AUTH));
+    POKE_NET_MemClear(&gPOKE_NET_Control.Auth, sizeof(POKE_NET_REQUESTCOMMON_AUTH));
     gPOKE_NET_Control.HasSvlToken = FALSE;
     gPOKE_NET_Control.ServerURL[0] = '\0';
     gPOKE_NET_Control.ServerPort = 0;
